@@ -1,11 +1,12 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost/db_springboot_backend
-    username: root
-    password: sasa
+    url: jdbc:mysql://localhost/db_springboot_backend?serverTimezone=UTC
+    username: devtest
+    password: MySQL*2019
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQL57Dialect
+    show-sql: true
     hibernate:
       ddl-auto: create-drop
 logging:

@@ -1,0 +1,12 @@
+insert into client (first_name, last_name, email, created_at) values ('Pepito', 'Pérez', 'pepito@mail.co', '2019-06-27');
+insert into client (first_name, last_name, email, created_at) values ('Camilo', 'Méndez', 'camilo@mail.co', '2019-06-27');
+insert into client (first_name, last_name, email, created_at) values ('Andrés', 'Gómez', 'andres@mail.co', '2019-06-27');
+insert into client (first_name, last_name, email, created_at) values ('Felipe', 'Parra', 'felipe@mail.co', '2019-06-27');
+insert into client (first_name, last_name, email, created_at) values ('Carlos', 'Melo', 'carlos@mail.co', '2019-06-27');
+insert into client (first_name, last_name, email, created_at) values ('Juan', 'Ramos', 'juan@mail.co', '2019-06-27');
+insert into client (first_name, last_name, email, created_at) values ('Fernando', 'Rodríguez', 'fernando@mail.co', '2019-06-27');
+insert into client (first_name, last_name, email, created_at) values ('Sandra', 'López', 'sandra@mail.co', '2019-06-27');
+insert into client (first_name, last_name, email, created_at) values ('Johanna', 'Romero', 'johanna@mail.co', '2019-06-27');
+insert into client (first_name, last_name, email, created_at) values ('Maria', 'Medina', 'maria@mail.co', '2019-06-27');
+insert into client (first_name, last_name, email, created_at) values ('José', 'Mora', 'jose@mail.co', '2019-06-27');
+insert into client (first_name, last_name, email, created_at) values ('Miguel', 'Sandoval', 'miguel@mail.co', '2019-06-27');
