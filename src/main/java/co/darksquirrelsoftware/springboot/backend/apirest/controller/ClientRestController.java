@@ -3,6 +3,8 @@ package co.darksquirrelsoftware.springboot.backend.apirest.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,6 +25,8 @@ import co.darksquirrelsoftware.springboot.backend.apirest.model.service.ClientSe
 @RequestMapping("/api")
 public class ClientRestController {
 
+	private static final Integer NUMBER_OF_ROWS_PER_PAGE = 5;
+	
 	private ClientService clientService;
 
 	@Autowired
@@ -33,6 +37,11 @@ public class ClientRestController {
 	@GetMapping("/clients")
 	public List<Client> findAllClients() {
 		return clientService.findAll();
+	}
+	
+	@GetMapping("/clients/page/{page}")
+	public Page<Client> findAllClients(@PathVariable Integer page) {
+		return clientService.findAll(PageRequest.of(page, NUMBER_OF_ROWS_PER_PAGE));
 	}
 
 	@GetMapping("/clients/{id}")
