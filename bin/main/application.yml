@@ -9,6 +9,11 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create-drop
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+              
 logging:
   level:
     org.hibernate.sql: debug
