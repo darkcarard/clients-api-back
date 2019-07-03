@@ -5,14 +5,19 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 public class Client implements Serializable {
@@ -45,6 +50,12 @@ public class Client implements Serializable {
 	private Date createdAt;
 	
 	private String picture;
+	
+	@NotNull(message = CANT_BE_EMPTY_MESASGE)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "zone_id")
+	@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
+	private Zone zone;
 	
 	public long getId() {
 		return id;
@@ -92,6 +103,14 @@ public class Client implements Serializable {
 
 	public void setPicture(String picture) {
 		this.picture = picture;
+	}
+
+	public Zone getZone() {
+		return zone;
+	}
+
+	public void setZone(Zone zone) {
+		this.zone = zone;
 	}
 
 }

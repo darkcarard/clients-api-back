@@ -2,18 +2,13 @@ package co.darksquirrelsoftware.springboot.backend.apirest.controller;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import co.darksquirrelsoftware.springboot.backend.apirest.model.entity.Client;
 import co.darksquirrelsoftware.springboot.backend.apirest.model.service.ClientService;
+import co.darksquirrelsoftware.springboot.backend.apirest.model.service.FileUploadService;
 
 @CrossOrigin(origins = { "http://localhost:4200" })
 @RestController
@@ -42,15 +38,16 @@ import co.darksquirrelsoftware.springboot.backend.apirest.model.service.ClientSe
 public class ClientRestController {
 
 	private static final Integer NUMBER_OF_ROWS_PER_PAGE = 5;
-	private static final String PATH_UPLOADED_FILES = "uploads";
 	private static final String IO_ERROR = "Error with file: ";
 	private static final String RESOURCE_ERROR = "Can´t load the file!";
 
 	private ClientService clientService;
+	private FileUploadService fileUploadService;
 
 	@Autowired
-	public ClientRestController(ClientService clientService) {
+	public ClientRestController(ClientService clientService, FileUploadService uploadFileService) {
 		this.clientService = clientService;
+		this.fileUploadService = uploadFileService;
 	}
 
 	@GetMapping("/clients")
@@ -88,6 +85,8 @@ public class ClientRestController {
 		clientTmp.setFirstName(client.getFirstName());
 		clientTmp.setLastName(client.getLastName());
 		clientTmp.setEmail(client.getEmail());
+		clientTmp.setCreatedAt(client.getCreatedAt());
+		clientTmp.setZone(client.getZone());
 
 		return clientService.save(clientTmp);
 	}
@@ -96,7 +95,13 @@ public class ClientRestController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteClient(@PathVariable Long id) {
 		Client client = clientService.findById(id);
-		deleteFile(client);
+		
+		try {
+			fileUploadService.deleteFile(client.getPicture());
+		} catch (IOException e) {
+			throw new RuntimeException(IO_ERROR + e.getCause().getMessage());
+		}
+
 		clientService.delete(id);
 	}
 
@@ -105,29 +110,31 @@ public class ClientRestController {
 
 		Client clientTmp = clientService.findById(id);
 
-		deleteFile(clientTmp);
-		clientTmp.setPicture(uploadFile(file));
-
-		return clientService.save(clientTmp);
+		try {
+			fileUploadService.deleteFile(clientTmp.getPicture());
+			
+			clientTmp.setPicture(fileUploadService.copyFile(file));
+			
+			return clientService.save(clientTmp);
+			
+		} catch (IOException e) {
+			throw new RuntimeException(IO_ERROR + e.getCause().getMessage());
+		}
 	}
 
 	@GetMapping("clients/upload/img/{fileName:.+}")
 	public ResponseEntity<Resource> viewImage(@PathVariable String fileName) {
-		Resource resource = null;
 
+		Resource resource;
+		HttpHeaders headers;
 		try {
-			resource = new UrlResource(Paths.get(PATH_UPLOADED_FILES).resolve(fileName).toAbsolutePath().toUri());
+			resource = fileUploadService.uploadFile(fileName);
+			headers = new HttpHeaders();
+			headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"");
 		} catch (MalformedURLException e) {
-			throw new RuntimeException(IO_ERROR + e.getCause().getMessage());
+			throw new RuntimeException(RESOURCE_ERROR + e.getCause().getMessage());
 		}
 
-		if (!resource.exists() || !resource.isReadable()) {
-			throw new RuntimeException(RESOURCE_ERROR);
-		}
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"");
-		
 		return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
 	}
 
@@ -138,32 +145,4 @@ public class ClientRestController {
 			throw new RuntimeException(errors.toString());
 		}
 	}
-
-	private String uploadFile(MultipartFile file) {
-		String fileName = "";
-
-		if (!file.isEmpty()) {
-			fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename().replace(" ", "");
-			Path filePath = Paths.get(PATH_UPLOADED_FILES).resolve(fileName).toAbsolutePath();
-			try {
-				Files.copy(file.getInputStream(), filePath);
-			} catch (IOException e) {
-				throw new RuntimeException(IO_ERROR + e.getCause().getMessage());
-			}
-		}
-
-		return fileName;
-	}
-
-	private void deleteFile(Client client) {
-		if (client.getPicture() != null && !client.getPicture().isEmpty()) {
-			Path oldFilePath = Paths.get(PATH_UPLOADED_FILES, client.getPicture()).toAbsolutePath();
-			try {
-				Files.deleteIfExists(oldFilePath);
-			} catch (IOException e) {
-				throw new RuntimeException(IO_ERROR + e.getCause().getMessage());
-			}
-		}
-	}
-
 }
