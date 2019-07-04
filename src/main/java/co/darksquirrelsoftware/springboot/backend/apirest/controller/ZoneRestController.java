@@ -3,6 +3,7 @@ package co.darksquirrelsoftware.springboot.backend.apirest.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,8 @@ import co.darksquirrelsoftware.springboot.backend.apirest.model.service.ZoneServ
 @RequestMapping("/api")
 public class ZoneRestController {
 
+	private static final String ROLE_ADMIN = "ROLE_ADMIN";
+	
 	private ZoneService zoneService;
 
 	@Autowired
@@ -23,6 +26,7 @@ public class ZoneRestController {
 		this.zoneService = zoneService;
 	}
 	
+	@Secured({ROLE_ADMIN})
 	@GetMapping("/zones")
 	public List<Zone> findAllZones() {
 		return zoneService.findAll();

@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,6 +41,8 @@ public class ClientRestController {
 	private static final Integer NUMBER_OF_ROWS_PER_PAGE = 5;
 	private static final String IO_ERROR = "Error with file: ";
 	private static final String RESOURCE_ERROR = "Can´t load the file!";
+	private static final String ROLE_ADMIN = "ROLE_ADMIN";
+	private static final String ROLE_USER = "ROLE_USER";
 
 	private ClientService clientService;
 	private FileUploadService fileUploadService;
@@ -60,11 +63,13 @@ public class ClientRestController {
 		return clientService.findAll(PageRequest.of(page, NUMBER_OF_ROWS_PER_PAGE));
 	}
 
+	@Secured({ROLE_ADMIN, ROLE_USER})
 	@GetMapping("/clients/{id}")
 	public Client findClientById(@PathVariable Long id) {
 		return clientService.findById(id);
 	}
 
+	@Secured({ROLE_ADMIN})
 	@PostMapping("/clients")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Client saveClient(@Valid @RequestBody Client client, BindingResult bindingResult) {
@@ -73,7 +78,8 @@ public class ClientRestController {
 
 		return clientService.save(client);
 	}
-
+	
+	@Secured({ROLE_ADMIN})
 	@PutMapping("/clients/{id}")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Client updateClient(@Valid @RequestBody Client client, @PathVariable Long id, BindingResult bindingResult) {
@@ -91,6 +97,7 @@ public class ClientRestController {
 		return clientService.save(clientTmp);
 	}
 
+	@Secured({ROLE_ADMIN})
 	@DeleteMapping("/clients/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteClient(@PathVariable Long id) {
@@ -105,6 +112,7 @@ public class ClientRestController {
 		clientService.delete(id);
 	}
 
+	@Secured({ROLE_ADMIN, ROLE_USER})
 	@PostMapping("clients/upload")
 	public Client uploadImagefile(@RequestParam("file") MultipartFile file, @RequestParam("id") Long id) {
 

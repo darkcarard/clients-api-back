@@ -51,3 +51,13 @@ insert into client (first_name, last_name, email, created_at, zone_id) values ('
 insert into client (first_name, last_name, email, created_at, zone_id) values ('Client28', 'Client28', 'Client28@mail.co', '2019-07-02', 3);
 insert into client (first_name, last_name, email, created_at, zone_id) values ('Client29', 'Client29', 'Client29@mail.co', '2019-07-02', 2);
 insert into client (first_name, last_name, email, created_at, zone_id) values ('Client30', 'Client30', 'Client30@mail.co', '2019-07-02', 1);
+
+insert into user (username, password, enabled, name, email) values ('carlos', '$2a$10$NpPNyJ8DBZ6rzctSkegWn.fOZ1CgrEO1RhnLTBWodCj/9XnjKUigW', 1, 'Carlos Ardila', 'cardila@mail.co');
+insert into user (username, password, enabled, name, email) values ('admin', '$2a$10$N69QNtkGg.O6mLXkoltDseVCC3TTaJueCnRKAJn3/GyB3.pBU0YPS', 1, 'Admin', 'admin@mail.co');
+
+insert into role (name) values ('ROLE_USER');
+insert into role (name) values ('ROLE_ADMIN');
+
+insert into user_role (user_id, role_id) values (1, 1);
+insert into user_role (user_id, role_id) values (2, 2);
+insert into user_role (user_id, role_id) values (2, 1);
