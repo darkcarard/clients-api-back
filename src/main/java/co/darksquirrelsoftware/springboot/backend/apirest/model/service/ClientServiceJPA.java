@@ -46,10 +46,11 @@ public class ClientServiceJPA implements ClientService {
 		Client clientTmp;
 		try {
 			clientTmp = clientRepository.save(client);
-		} catch (DataIntegrityViolationException e) {
-			
+		} catch (DataIntegrityViolationException e) {		
 			throw new ClientEmailDuplicatedException(CLIENT_DUPLICATED_EMAIL_MESSAGE);
-		} 
+		} catch (Exception e) {
+			throw e;
+		}
 		return clientTmp;
 	}
 

@@ -29,7 +29,6 @@ public class EnhancedToken implements TokenEnhancer {
 		User user = userService.findByUsername(authentication.getName());
 
 		Map<String, Object> info = new HashMap<String, Object>();
-		info.put("additional_info", "Hi, how are you?".concat(" ").concat(authentication.getName()));
 		info.put("name", user.getName());
 		info.put("email", user.getEmail());
 
